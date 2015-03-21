@@ -3,18 +3,52 @@
 <head>
 	<title>CrimeMap</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
-	<link rel="stylesheet" href="stylesheets/style.css" />
+	 <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+	  <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+	  <style type="text/css">
+	  	#map { height: 500px;
+	  				 width: 500px }
+	  </style>
+	   <link rel="stylesheet" href="http://bootswatch.com/flatly/bootstrap.css" media="screen">
+    <link rel="stylesheet" href="http://bootswatch.com/bower_components/font-awesome/css/font-awesome.min.css" media="screen">
+    <link rel="stylesheet" href="http://bootswatch.com/assets/css/bootswatch.min.css">
+
+
 </head>
 <body>
-	<table>
-		<tr>
-			<td style='width: 30%;'><img src='images/newapp-icon.png'>
-			</td>
-			<td>
-				<h1 id = "message">CrimeMap</h1>
-			</td>
-		</tr>
-	</table>
+<div class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a href="./" class="navbar-brand">CrimeMap</a>
+        
+        </div>
+      </div>
+    </div>
+    
+
+ <h1>Gmaps Heatmap Overlay Example</h1>
+     
+     <div id="map" style="centre"></div>
+    
+
+<script>
+		//
+		var map = L.map('map').setView([28.6761, 77.1151], 10);
+
+		L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
+			maxZoom: 10,
+			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+				'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+			id: 'examples.map-i875mjb7'
+		}).addTo(map);
+
+
+	</script>
+
+				<script src='https://api.tiles.mapbox.com/mapbox.js/v2.1.6/mapbox.js'></script>
+				<link href='https://api.tiles.mapbox.com/mapbox.js/v2.1.6/mapbox.css' rel='stylesheet' />
+
+
 </body>
 </html>
