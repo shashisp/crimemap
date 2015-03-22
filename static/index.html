@@ -1,54 +1,174 @@
 <!DOCTYPE html>
-<html>
-<head>
-	<title>CrimeMap</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	 <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
-	  <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
-	  <style type="text/css">
-	  	#map { height: 500px;
-	  				 width: 500px }
-	  </style>
-	   <link rel="stylesheet" href="http://bootswatch.com/flatly/bootstrap.css" media="screen">
-    <link rel="stylesheet" href="http://bootswatch.com/bower_components/font-awesome/css/font-awesome.min.css" media="screen">
-    <link rel="stylesheet" href="http://bootswatch.com/assets/css/bootswatch.min.css">
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Crime city</title>
+	    <style>
+      html, body{
+        height: 100%;
+        margin: 0px;
+        padding: 0px
+      }
+      #container { width: 100%; height: 100% }
+      #panel {
+        position: absolute;
+        top: 5px;
+        left: 50%;
+        margin-left: -180px;
+        z-index: 5;
+        background-color: #fff;
+        padding: 5px;
+        border: 1px solid #999;
+      }
+      #map { height: 500px !important;
+             width: 500px }
+    </style>
+    <link href='https://api.tiles.mapbox.com/mapbox.js/v2.1.6/mapbox.css' rel='stylesheet' />
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="stylesheets/app.css">
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=weather,visualization,panoramio"></script>
+  </head>
 
-
-</head>
-<body>
-<div class="navbar navbar-default navbar-fixed-top">
-      <div class="container">
+  <body ng-app="myApp" ng-controller="myCtrl">
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container-fluid">
         <div class="navbar-header">
-          <a href="./" class="navbar-brand">CrimeMap</a>
-        
+          <div class="navbar-icon-container">
+            <a href="#" class="navbar-icon pull-right visible-xs" id="nav-btn"><i class="fa fa-bars fa-lg white"></i></a>
+            <a href="#" class="navbar-icon pull-right visible-xs" id="sidebar-toggle-btn"><i class="fa fa-search fa-lg white"></i></a>
+          </div>
+          <a class="navbar-brand" href="#">Crime city</a>
         </div>
+        <div class="navbar-collapse collapse">
+		   <ul class="nav navbar-nav">
+            <li><a href="#/score"><i class="fa fa-question-circle white"></i>&nbsp;&nbsp
+            Safety Maps</a></li>
+            <li><a href="#/analysis"><i class="fa fa-question-circle white"></i>&nbsp;&nbsp;Analysis</a></li>
+           
+        
+          </ul>
+   
+          <form class="navbar-form navbar-right" role="search">
+            <div class="form-group has-feedback">
+                <input id="searchbox" type="text" placeholder="Search" class="form-control">
+                <span id="searchicon" class="fa fa-search form-control-feedback"></span>
+            </div>
+          </form>
+        </div><!--/.navbar-collapse -->
       </div>
     </div>
+
     
-
- <h1>Gmaps Heatmap Overlay Example</h1>
-     
-     <div id="map" style="centre"></div>
+    <div ng-view=""></div>
     
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/angular.js"></script>
+    <script type="text/javascript" src="js/angular-route.js"></script>
+    <script type="text/javascript" src="js/ng-map.min.js"></script>
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+    <script src='https://api.tiles.mapbox.com/mapbox.js/v2.1.6/mapbox.js'></script>
+    
+    <script>
+        var app=angular.module("myApp",['ngRoute','ngMap']);
+        app.config(['$routeProvider',
+        function($routeProvider) {
+          $routeProvider.
+            when('/', {
+              templateUrl: 'main.html',
+              controller: 'myCtrl'
+            }).
+            when('/analysis', {
+              templateUrl: 'analysis.html',
+              controller: 'myCtrl'
+            }).
+            when('/score', {
+              templateUrl: 'score.html',
+              controller: 'myCtrl'
+            }).
+            otherwise({
+              redirectTo: '/'
+            });
+        }]);
+        app.controller("myCtrl",function($scope){
+           var heatmap;
+           $scope.crimeData = [
+          {location: new google.maps.LatLng(28.6399951, 77.220425), weight: 0.5},
+          {location: new google.maps.LatLng(28.5548957, 77.0962143), weight: 2},
+          {location: new google.maps.LatLng(28.7174699, 77.211445), weight: 5},
+          {location: new google.maps.LatLng(28.5548957, 77.0962143), weight: 3},
+          {location: new google.maps.LatLng(28.6399951, 77.220425), weight: 4},
+          {location: new google.maps.LatLng(28.65415, 77.0673599), weight:900},
+          {location: new google.maps.LatLng(28.65415, 77.0673599), weight: 7},
+          {location: new google.maps.LatLng(28.6399951, 77.220425), weight: 0.5},
+          {location: new google.maps.LatLng(28.508, 77.22826), weight: 8},
+          {location: new google.maps.LatLng(28.6454415, 77.0907573), weight: 10},
+          ];
+    $scope.$on('mapInitialized', function(event, map) {
+      heatmap = map.heatmapLayers.foo;
+    });
+         /* var map, pointarray, heatmap;
+          var taxiData = [
+          {location: new google.maps.LatLng(28.6399951, 77.220425), weight: 0.5},
+          {location: new google.maps.LatLng(28.5548957, 77.0962143), weight: 2},
+          {location: new google.maps.LatLng(28.7174699, 77.211445), weight: 5},
+          {location: new google.maps.LatLng(28.5548957, 77.0962143), weight: 3},
+          {location: new google.maps.LatLng(28.6399951, 77.220425), weight: 4},
+          {location: new google.maps.LatLng(28.65415, 77.0673599), weight:900},
+          {location: new google.maps.LatLng(28.65415, 77.0673599), weight: 7},
+          {location: new google.maps.LatLng(28.6399951, 77.220425), weight: 0.5},
+          {location: new google.maps.LatLng(28.508, 77.22826), weight: 8},
+          {location: new google.maps.LatLng(28.6454415, 77.0907573), weight: 10},
+          ];
 
-<script>
-		//
-		var map = L.map('map').setView([28.6761, 77.1151], 10);
+          $scope.initialize=function() {
+            var mapOptions = {
+              zoom: 11,
+              center: new google.maps.LatLng(28.6139,77.2090),
+              mapTypeId: google.maps.MapTypeId.STREET
+            };
 
-		L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
-			maxZoom: 10,
-			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-				'Imagery © <a href="http://mapbox.com">Mapbox</a>',
-			id: 'examples.map-i875mjb7'
-		}).addTo(map);
+            map = new google.maps.Map(document.getElementById('map-canvas'),
+                mapOptions);
+
+            var pointArray = new google.maps.MVCArray(taxiData);
+
+            heatmap = new google.maps.visualization.HeatmapLayer({
+              data: pointArray
+            });
+
+            heatmap.setMap(map);
+            heatmap.setOptions({
+                          dissipating: true,
+                          maxIntensity: 10,
+                          radius: 20,
+                          opacity: 0.9,
+                          //dissipating: false
+                      });
+          }
+
+          function toggleHeatmap() {
+            heatmap.setMap(heatmap.getMap() ? null : map);
+          }
 
 
-	</script>
+          function changeRadius() {
+            heatmap.set('radius', heatmap.get('radius') ? null : 100);
+          }
 
-				<script src='https://api.tiles.mapbox.com/mapbox.js/v2.1.6/mapbox.js'></script>
-				<link href='https://api.tiles.mapbox.com/mapbox.js/v2.1.6/mapbox.css' rel='stylesheet' />
-
-
-</body>
+          function changeOpacity() {
+            heatmap.set('opacity', heatmap.get('opacity') ? null : 0.2);
+          }
+          */
+          });
+    </script>
+  </body>
 </html>
